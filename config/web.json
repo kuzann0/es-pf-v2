@@ -1,0 +1,9 @@
+{
+  "web": [
+    {
+      "src": "public/images/1web.png",
+      "alt": "image",
+      "tags": ["capstone", "web", "design"]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "personal": [
+    {
+      "src": "public/images/wyv-img.JPG",
+      "alt": "image",
+      "link": "#",
+      "tags": ["personal", "web", "project"]
+    },
+    {
+      "src": "public/images/valentine.png",
+      "alt": "image",
+      "link": "#",
+      "tags": ["personal", "web", "design"]
+    }
+  ]
+}

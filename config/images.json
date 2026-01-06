@@ -1,0 +1,64 @@
+{
+  "images": [
+    {
+      "src": "public/images/boltz.png",
+      "alt": "image",
+      "tags": ["design", "branding", "poster"]
+    },
+    {
+      "src": "public/images/aka1.png",
+      "alt": "image",
+      "tags": ["design", "theory"]
+    },
+    {
+      "src": "public/images/aka-model-1.png",
+      "alt": "image",
+      "tags": ["design", "apparel", "portrait", "model"]
+    },
+    {
+      "src": "public/images/aka-modelfront-2.png",
+      "alt": "image",
+      "tags": ["apparel", "design", "portrait", "model"]
+    },
+    {
+      "src": "public/images/aka3.png",
+      "alt": "image",
+      "tags": ["design", "theory", "logo"]
+    },
+    {
+      "src": "public/images/aka4.png",
+      "alt": "image",
+      "tags": ["design", "theory", "typography"]
+    },
+    {
+      "src": "public/images/aka5.png",
+      "alt": "image",
+      "tags": ["design", "branding", "visual"]
+    },
+    {
+      "src": "public/images/banner2.png",
+      "alt": "image",
+      "tags": ["design", "branding", "visual"]
+    },
+    {
+      "src": "public/images/banner3.png",
+      "alt": "image",
+      "tags": ["design", "branding", "visual"]
+    },
+    {
+      "src": "public/images/variants1.jpg",
+      "alt": "image",
+      "tags": ["design", "branding", "visual"]
+    },
+    {
+      "src": "public/images/variants2.jpg",
+      "alt": "image",
+      "tags": ["design", "branding", "visual"]
+    },
+    {
+      "src": "public/images/variants3.jpg",
+      "alt": "image",
+      "tags": ["design", "branding", "visual"]
+    }
+  ]
+}
