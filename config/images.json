@@ -59,6 +59,61 @@
       "src": "public/images/variants3.jpg",
       "alt": "image",
       "tags": ["design", "branding", "visual"]
+    },
+    {
+      "src": "public/images/can1.png",
+      "alt": "image",
+      "tags": ["product", "branding", "3D"]
+    },
+    {
+      "src": "public/images/can2.png",
+      "alt": "image",
+      "tags": ["product", "branding", "3D"]
+    },
+    {
+      "src": "public/images/can3.png",
+      "alt": "image",
+      "tags": ["product", "branding", "3D"]
+    },
+    {
+      "src": "public/images/lunastudio1.png",
+      "alt": "image",
+      "tags": ["lunastudio", "branding"]
+    },
+    {
+      "src": "public/images/lunastudio2.png",
+      "alt": "image",
+      "tags": ["lunastudio", "branding"]
+    },
+    {
+      "src": "public/images/lunastudio3.png",
+      "alt": "image",
+      "tags": ["lunastudio", "branding"]
+    },
+    {
+      "src": "public/images/lunastudio4.png",
+      "alt": "image",
+      "tags": ["lunastudio", "branding"]
+    },
+    {
+      "src": "public/images/lunastudio5.png",
+      "alt": "image",
+      "tags": ["lunastudio", "branding"]
+    },
+    {
+      "src": "public/images/lunastudio6.png",
+      "alt": "image",
+      "tags": ["lunastudio", "branding"]
+    },
+    {
+      "src": "public/images/triumph1.png",
+      "alt": "image",
+      "tags": ["triumPH", "branding"]
+    },
+    {
+      "src": "public/images/triumph2.png",
+      "alt": "image",
+      "tags": ["triumPH", "branding"]
     }
   ]
 }
