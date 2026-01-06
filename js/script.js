@@ -35,9 +35,10 @@ function createImageElement(item, category) {
     <a
       class="link-icon"
       aria-label="Visit project"
+      href="#"
       target="_blank"
       rel="noopener noreferrer"
-    >
+    ></a>
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M10 5H8.59C7.711 5 7 5.711 7 6.59V15.41C7 16.289 7.711 17 8.59 17H17.41C18.289 17 19 16.289 19 15.41V14M21 3h-8m8 0l-8 8m8 0V5"
@@ -738,4 +739,5 @@ window.addEventListener("load", function () {
   initPortfolioWithDynamicImages();
   initShowMore();
   initVideoPlayer();
+  initLinkHandlers();
 });

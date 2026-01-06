@@ -38,6 +38,7 @@ function createImageElement(item, category) {
     <a
       class="link-icon"
       aria-label="Visit project"
+      href="#"
       target="_blank"
       rel="noopener noreferrer"
     >
@@ -961,4 +962,5 @@ window.addEventListener("load", function () {
   initPortfolioWithDynamicImages();
   initShowMore();
   initVideoPlayer();
+  initLinkHandlers();
 });
