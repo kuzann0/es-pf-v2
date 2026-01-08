@@ -1678,7 +1678,7 @@ footer {
   gap: 15px;
   margin: 40px 0 50px 0;
   flex-wrap: wrap;
-  width: 100%;
+  width: 70%;
 }
 
 .tag-label {
