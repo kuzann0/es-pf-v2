@@ -1572,7 +1572,7 @@ model-viewer {
   background-color: #141414;
   z-index: 100;
   position: relative;
-  margin-top: -10px;
+  margin-top: -180px;
   padding: 40px 20px;
   display: flex;
   justify-content: center;
@@ -1624,9 +1624,65 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 150px;
+  padding: 60px 20px;
   width: 100%;
-  font-size: 1rem;
+
+  margin-top: 50px;
+  background: linear-gradient(180deg, transparent, rgba(244, 244, 249, 0.02));
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.footer-text {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.footer-year {
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  color: rgba(244, 244, 249, 0.5);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.footer-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--color-border);
+}
+
+.footer-link {
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.footer-link:hover {
+  color: var(--color-primary);
+  letter-spacing: 1px;
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -1726,8 +1782,21 @@ footer {
   }
 
   footer {
-    font-size: 0.9rem;
-    height: 100px;
+    padding: 40px 15px;
+    margin-top: 60px;
+  }
+
+  .footer-content {
+    gap: 20px;
+  }
+
+  .footer-text,
+  .footer-link {
+    font-size: 0.85rem;
+  }
+
+  .footer-year {
+    font-size: 0.75rem;
   }
 }
 
@@ -1856,9 +1925,28 @@ footer {
   }
 
   footer {
-    font-size: 0.8rem;
-    height: 80px;
-    padding: 10px;
+    padding: 30px 10px;
+    margin-top: 40px;
+  }
+
+  .footer-content {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .footer-divider {
+    flex-basis: 100%;
+    width: 30px;
+    height: 1px;
+  }
+
+  .footer-text,
+  .footer-link {
+    font-size: 0.75rem;
+  }
+
+  .footer-year {
+    font-size: 0.65rem;
   }
 }
 
@@ -1890,7 +1978,16 @@ footer {
   }
 
   footer {
-    font-size: 0.75rem;
+    padding: 25px 8px;
+  }
+
+  .footer-text,
+  .footer-link {
+    font-size: 0.7rem;
+  }
+
+  .footer-year {
+    font-size: 0.6rem;
   }
 }
 
