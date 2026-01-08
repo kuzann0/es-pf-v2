@@ -415,6 +415,12 @@ function initLightbox() {
   const lightboxClose = document.querySelector(".lightbox-close");
   const viewIcons = document.querySelectorAll(".view-icon");
 
+  // Drag and pan variables
+  let isDragging = false;
+  let startX, startY, scrollLeft, scrollTop;
+  let offsetX = 0,
+    offsetY = 0;
+
   // Open lightbox when view icon is clicked
   viewIcons.forEach((icon) => {
     icon.addEventListener("click", function (e) {
@@ -427,6 +433,8 @@ function initLightbox() {
 
       // Clear previous content
       lightboxContent.innerHTML = "";
+      offsetX = 0;
+      offsetY = 0;
 
       if (img && img.src) {
         // Handle image content
@@ -443,6 +451,9 @@ function initLightbox() {
 
         lightboxModal.classList.add("active");
         document.body.style.overflow = "hidden";
+
+        // Add drag and pan functionality
+        setupImageDragPan(clonedImg);
       } else if (video) {
         // Handle video content
         const clonedVideo = video.cloneNode(true);
@@ -476,6 +487,129 @@ function initLightbox() {
       }
     });
   });
+
+  /**
+   * Setup drag and pan functionality for zoomed images
+   */
+  function setupImageDragPan(img) {
+    const zoomControls = document.querySelector(".lightbox-zoom-controls");
+    img.style.cursor = "grab";
+    img.style.transition = "none";
+
+    img.addEventListener("mousedown", (e) => {
+      // Only allow dragging if image is zoomed in
+      const currentZoom = parseFloat(
+        img.style.transform?.match(/scale\(([^)]+)\)/) || [1, 1]
+      )[1];
+      if (currentZoom <= 1) return;
+
+      isDragging = true;
+      startX = e.pageX;
+      startY = e.pageY;
+      img.style.cursor = "grabbing";
+
+      // Hide zoom controls while dragging
+      if (zoomControls) {
+        zoomControls.style.opacity = "0";
+        zoomControls.style.pointerEvents = "none";
+      }
+
+      e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+
+      const deltaX = e.pageX - startX;
+      const deltaY = e.pageY - startY;
+
+      offsetX += deltaX;
+      offsetY += deltaY;
+
+      startX = e.pageX;
+      startY = e.pageY;
+
+      updateImageTransform(img);
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (isDragging) {
+        isDragging = false;
+        img.style.cursor = "grab";
+
+        // Show zoom controls again
+        if (zoomControls) {
+          zoomControls.style.opacity = "1";
+          zoomControls.style.pointerEvents = "auto";
+        }
+      }
+    });
+
+    // Touch support for mobile
+    img.addEventListener("touchstart", (e) => {
+      const currentZoom = parseFloat(
+        img.style.transform?.match(/scale\(([^)]+)\)/) || [1, 1]
+      )[1];
+      if (currentZoom <= 1 || e.touches.length > 1) return;
+
+      isDragging = true;
+      startX = e.touches[0].pageX;
+      startY = e.touches[0].pageY;
+
+      // Hide zoom controls while dragging
+      if (zoomControls) {
+        zoomControls.style.opacity = "0";
+        zoomControls.style.pointerEvents = "none";
+      }
+
+      e.preventDefault();
+    });
+
+    document.addEventListener("touchmove", (e) => {
+      if (!isDragging || !e.touches[0]) return;
+
+      const deltaX = e.touches[0].pageX - startX;
+      const deltaY = e.touches[0].pageY - startY;
+
+      offsetX += deltaX;
+      offsetY += deltaY;
+
+      startX = e.touches[0].pageX;
+      startY = e.touches[0].pageY;
+
+      updateImageTransform(img);
+    });
+
+    document.addEventListener("touchend", () => {
+      if (isDragging) {
+        isDragging = false;
+
+        // Show zoom controls again
+        if (zoomControls) {
+          zoomControls.style.opacity = "1";
+          zoomControls.style.pointerEvents = "auto";
+        }
+      }
+    });
+  }
+
+  /**
+   * Update image transform with zoom and pan
+   */
+  function updateImageTransform(img) {
+    const currentZoom = parseFloat(
+      img.style.transform?.match(/scale\(([^)]+)\)/) || [1, 1]
+    )[1];
+
+    // Limit pan based on zoom level
+    const maxOffsetX = (img.offsetWidth * (currentZoom - 1)) / 2;
+    const maxOffsetY = (img.offsetHeight * (currentZoom - 1)) / 2;
+
+    offsetX = Math.max(-maxOffsetX, Math.min(maxOffsetX, offsetX));
+    offsetY = Math.max(-maxOffsetY, Math.min(maxOffsetY, offsetY));
+
+    img.style.transform = `scale(${currentZoom}) translate(${offsetX}px, ${offsetY}px)`;
+  }
 
   // Close lightbox when close button is clicked
   if (lightboxClose) {
@@ -575,10 +709,20 @@ function initVideoPlayer() {
     const durationDisplay = controls.querySelector(".duration");
     const fullscreenBtn = controls.querySelector(".fullscreen-btn");
 
-    // Initialize video volume from slider
-    const initialVolume = volumeSlider.value / 100;
-    video.volume = initialVolume;
-    updateVolumeSvg(volumeBtn, initialVolume);
+    // ========================================
+    // AUDIO LOGIC: Mute by default, unmute on interaction
+    // ========================================
+
+    // Set initial state: muted by default
+    video.muted = true;
+    video.volume = 1; // Keep volume at max, but muted
+    volumeSlider.value = 100; // Slider shows 100% but video is muted
+
+    // Track if user has interacted with volume controls
+    let userHasInteractedWithVolume = false;
+
+    // Update volume SVG to show muted state initially
+    updateVolumeSvg(volumeBtn, 0);
 
     // Check if video has audio track
     const checkAudioTrack = () => {
@@ -662,29 +806,116 @@ function initVideoPlayer() {
       video.currentTime = percent * video.duration;
     });
 
-    // Volume control - unmute and set volume when slider is adjusted
-    volumeSlider.addEventListener("input", () => {
-      const volume = volumeSlider.value / 100;
-      video.volume = volume;
-      video.muted = false; // Unmute when user adjusts slider
-      updateVolumeSvg(volumeBtn, volume);
+    // Volume slider - adjust volume and unmute on first interaction
+    const handleVolumeChange = () => {
+      const volume = parseFloat(volumeSlider.value) / 100;
+      video.volume = Math.max(0, Math.min(1, volume)); // Clamp between 0 and 1
+
+      // On first interaction with slider, unmute
+      if (!userHasInteractedWithVolume) {
+        userHasInteractedWithVolume = true;
+        video.muted = false;
+      }
+
+      // Ensure muted state reflects actual volume
+      if (volume === 0) {
+        video.muted = true;
+      } else if (video.muted) {
+        video.muted = false;
+      }
+
+      updateVolumeSvg(volumeBtn, video.muted ? 0 : video.volume);
+    };
+
+    volumeSlider.addEventListener("input", handleVolumeChange);
+    volumeSlider.addEventListener("change", handleVolumeChange);
+
+    // Volume slider - smooth interaction feedback
+    volumeSlider.addEventListener("mousedown", (e) => {
+      volumeSlider.style.cursor = "grabbing";
+      e.preventDefault();
+      handleVolumeChange();
     });
 
-    // Volume button - toggle mute
-    volumeBtn.addEventListener("click", () => {
-      if (video.muted) {
-        video.muted = false;
-        // If slider is at 0, set it to a reasonable level
-        if (volumeSlider.value == 0) {
-          volumeSlider.value = 50;
-          video.volume = 0.5;
-        } else {
-          video.volume = volumeSlider.value / 100;
-        }
-      } else {
-        video.muted = true;
+    volumeSlider.addEventListener("mousemove", (e) => {
+      if (e.buttons === 1) {
+        // Left mouse button is pressed
+        handleVolumeChange();
       }
-      updateVolumeSvg(volumeBtn, video.muted ? 0 : video.volume);
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (volumeSlider === document.activeElement) {
+        volumeSlider.blur();
+      }
+      volumeSlider.style.cursor = "grab";
+    });
+
+    // Touch support for volume slider
+    volumeSlider.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      updateVolumeFromTouch(e, volumeSlider, video, volumeBtn, () => {
+        if (!userHasInteractedWithVolume) {
+          userHasInteractedWithVolume = true;
+          video.muted = false;
+        }
+      });
+    });
+
+    volumeSlider.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+      updateVolumeFromTouch(e, volumeSlider, video, volumeBtn, () => {
+        if (!userHasInteractedWithVolume) {
+          userHasInteractedWithVolume = true;
+          video.muted = false;
+        }
+      });
+    });
+
+    volumeSlider.addEventListener("touchend", () => {
+      handleVolumeChange();
+    });
+
+    // Volume button - toggle mute on first click, then toggle between mute states
+    volumeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      // On first interaction, unmute and set to 50%
+      if (!userHasInteractedWithVolume) {
+        userHasInteractedWithVolume = true;
+        video.muted = false;
+        volumeSlider.value = 50;
+        video.volume = 0.5;
+        updateVolumeSvg(volumeBtn, 0.5);
+      } else {
+        // Toggle mute state
+        video.muted = !video.muted;
+        updateVolumeSvg(volumeBtn, video.muted ? 0 : video.volume);
+      }
+    });
+
+    // Add visual feedback for volume button
+    volumeBtn.addEventListener("mousedown", (e) => {
+      volumeBtn.style.transform = "scale(0.92)";
+      volumeBtn.style.transition = "transform 0.1s ease";
+    });
+
+    document.addEventListener("mouseup", () => {
+      volumeBtn.style.transform = "scale(1)";
+    });
+
+    // Keyboard support for volume (use arrow keys when focused on slider)
+    volumeSlider.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        volumeSlider.value = Math.max(0, parseFloat(volumeSlider.value) - 5);
+        handleVolumeChange();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        volumeSlider.value = Math.min(100, parseFloat(volumeSlider.value) + 5);
+        handleVolumeChange();
+      }
     });
 
     // Fullscreen
@@ -710,7 +941,7 @@ function formatTime(seconds) {
 }
 
 /**
- * Update volume SVG based on volume level
+ * Update volume SVG based on volume level with smooth transitions
  */
 function updateVolumeSvg(btn, volume) {
   btn.innerHTML = "";
@@ -720,6 +951,7 @@ function updateVolumeSvg(btn, volume) {
   svg.style.stroke = "#f4f4f9";
   svg.style.strokeWidth = "2";
   svg.style.fill = "#f4f4f9";
+  svg.style.transition = "all 0.2s ease";
 
   if (volume === 0) {
     svg.innerHTML =
@@ -732,6 +964,23 @@ function updateVolumeSvg(btn, volume) {
       '<polygon points="3 9 7 9 11 5 11 19 7 15 3 15"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>';
   }
   btn.appendChild(svg);
+}
+
+/**
+ * Update volume from touch input
+ */
+function updateVolumeFromTouch(e, slider, video, btn, callback) {
+  const touch = e.touches[0];
+  const rect = slider.getBoundingClientRect();
+  const percent = Math.max(
+    0,
+    Math.min(1, (touch.clientX - rect.left) / rect.width)
+  );
+  slider.value = Math.round(percent * 100);
+  const volume = percent;
+  video.volume = volume;
+  updateVolumeSvg(btn, video.muted ? 0 : volume);
+  if (callback) callback();
 }
 
 // Initialize when DOM is ready
