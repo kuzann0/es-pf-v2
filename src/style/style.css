@@ -57,6 +57,12 @@
   font-family: var(--font-family-primary);
 }
 
+/* Prevent scrolling when lightbox is open */
+body.lightbox-open {
+  overflow: hidden;
+  height: 100vh;
+}
+
 /* ========================================
    GLOBAL STYLES
    ======================================== */
@@ -431,7 +437,7 @@ ul li a:hover {
 }
 
 .works-section {
-  border: 6px var(--color-border) solid;
+  border: 3.8px var(--color-border) solid;
   border-radius: 120px 120px 0px 0px;
   min-height: 110vh;
   width: 80%;
@@ -480,6 +486,27 @@ ul li a:hover {
   letter-spacing: 4px;
   z-index: 1;
   user-select: none;
+}
+
+/* Four Squares Design Element */
+.four-squares-container {
+  position: absolute;
+  top: 7%;
+  left: -75px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  z-index: 99999;
+}
+
+.squares-bg {
+  width: 8px;
+  height: 8px;
+  background-color: #f4f4f9;
+  border-radius: 1px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
 }
 
 .model-viewer-container {
@@ -1088,19 +1115,19 @@ model-viewer {
 .lightbox-modal {
   display: none;
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.96);
   backdrop-filter: blur(2px);
-  z-index: 10000;
+  z-index: 99999;
   justify-content: center;
   align-items: center;
   opacity: 0;
   transition: opacity 0.4s ease;
   padding: 60px 20px 20px 20px;
   overflow: auto;
+  box-sizing: border-box;
 }
 
 .lightbox-modal.active {
@@ -1117,7 +1144,7 @@ model-viewer {
   align-items: center;
   animation: zoomIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: visible;
-  margin: 0 auto;
+  margin: 0;
 }
 
 @keyframes zoomIn {
@@ -1152,7 +1179,7 @@ model-viewer {
 /* Lightbox Zoom Controls */
 .lightbox-zoom-controls {
   position: fixed;
-  bottom: 60px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -1227,8 +1254,8 @@ model-viewer {
 /* Lightbox Link Icon */
 .lightbox-link-icon {
   position: fixed;
-  bottom: 140px;
-  right: 90px;
+  bottom: 80px;
+  right: 40px;
   width: 55px;
   height: 55px;
   border-radius: 50%;
@@ -1276,8 +1303,8 @@ model-viewer {
 
 .lightbox-close {
   position: fixed;
-  top: 90px;
-  right: 80px;
+  top: 40px;
+  right: 40px;
   width: 50px;
   height: 50px;
   border-radius: 50%;

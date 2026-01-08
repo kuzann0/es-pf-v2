@@ -655,7 +655,74 @@ function initLightbox() {
           zoomLevel.textContent = Math.round(currentZoom * 100) + "%";
         });
 
-        // Add link icon if it exists
+        // Drag to pan functionality
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let translateX = 0;
+        let translateY = 0;
+
+        clonedImg.addEventListener("mousedown", (e) => {
+          if (currentZoom > 1) {
+            isDragging = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            clonedImg.style.cursor = "grabbing";
+          }
+        });
+
+        document.addEventListener("mousemove", (e) => {
+          if (isDragging && currentZoom > 1) {
+            const deltaX = e.clientX - dragStartX;
+            const deltaY = e.clientY - dragStartY;
+
+            translateX += deltaX;
+            translateY += deltaY;
+
+            clonedImg.style.transform = `scale(${currentZoom}) translate(${
+              translateX / currentZoom
+            }px, ${translateY / currentZoom}px)`;
+
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+          }
+        });
+
+        document.addEventListener("mouseup", () => {
+          isDragging = false;
+          clonedImg.style.cursor = currentZoom > 1 ? "grab" : "zoom-in";
+        });
+
+        // Change cursor based on zoom level
+        clonedImg.addEventListener("mouseenter", () => {
+          clonedImg.style.cursor = currentZoom > 1 ? "grab" : "zoom-in";
+        });
+
+        // Reset pan when zoom resets
+        zoomInBtn.addEventListener("click", () => {
+          if (currentZoom < maxZoom) {
+            currentZoom += zoomStep;
+            clonedImg.style.transform = `scale(${currentZoom}) translate(${
+              translateX / currentZoom
+            }px, ${translateY / currentZoom}px)`;
+            zoomLevel.textContent = Math.round(currentZoom * 100) + "%";
+          }
+        });
+
+        zoomOutBtn.addEventListener("click", () => {
+          if (currentZoom > minZoom) {
+            currentZoom -= zoomStep;
+            if (currentZoom === minZoom) {
+              translateX = 0;
+              translateY = 0;
+            }
+            clonedImg.style.transform = `scale(${currentZoom}) translate(${
+              translateX / currentZoom
+            }px, ${translateY / currentZoom}px)`;
+            zoomLevel.textContent = Math.round(currentZoom * 100) + "%";
+          }
+        });
+
         if (linkIcon) {
           const clonedLinkIcon = linkIcon.cloneNode(true);
           clonedLinkIcon.classList.add("lightbox-link-icon");
