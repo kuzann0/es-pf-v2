@@ -76,32 +76,37 @@
       "tags": ["product", "branding", "3D"]
     },
     {
-      "src": "public/images/lunastudio1.png",
+      "src": "public/images/spiral.png",
+      "alt": "image",
+      "tags": ["product", "branding", "3D"]
+    },
+    {
+      "src": "public/images/lunariastudio1.png",
       "alt": "image",
       "tags": ["lunastudio", "branding"]
     },
     {
-      "src": "public/images/lunastudio2.png",
+      "src": "public/images/lunariastudio2.png",
       "alt": "image",
       "tags": ["lunastudio", "branding"]
     },
     {
-      "src": "public/images/lunastudio3.png",
+      "src": "public/images/lunariastudio3.png",
       "alt": "image",
       "tags": ["lunastudio", "branding"]
     },
     {
-      "src": "public/images/lunastudio4.png",
+      "src": "public/images/lunariastudio4.png",
       "alt": "image",
       "tags": ["lunastudio", "branding"]
     },
     {
-      "src": "public/images/lunastudio5.png",
+      "src": "public/images/lunariastudio5.png",
       "alt": "image",
       "tags": ["lunastudio", "branding"]
     },
     {
-      "src": "public/images/lunastudio6.png",
+      "src": "public/images/lunariastudio6.png",
       "alt": "image",
       "tags": ["lunastudio", "branding"]
     },
