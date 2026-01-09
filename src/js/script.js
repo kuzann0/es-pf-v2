@@ -1024,10 +1024,132 @@ function updateVolumeSvg(btn, volume) {
   btn.appendChild(svg);
 }
 
+// ========================================
+// PUZZLE ANIMATION INITIALIZATION
+// ========================================
+
+/**
+ * Initialize puzzle animation with piece positioning
+ */
+function initPuzzleAnimation() {
+  const puzzleContainer = document.querySelector(".puzzle-container");
+  const puzzlePieces = document.querySelectorAll(".puzzle-piece");
+
+  if (!puzzleContainer || puzzlePieces.length === 0) {
+    return;
+  }
+
+  // Wait for images to load to get their dimensions
+  let loadedCount = 0;
+  const pieces = Array.from(puzzlePieces);
+
+  pieces.forEach((piece, index) => {
+    piece.onload = function () {
+      loadedCount++;
+      if (loadedCount === pieces.length) {
+        calculatePuzzlePositions(puzzleContainer, pieces);
+      }
+    };
+    // Trigger load event if image is already cached
+    if (piece.complete) {
+      piece.onload();
+    }
+  });
+}
+
+/**
+ * Calculate initial positions for puzzle pieces (scattered)
+ */
+function calculatePuzzlePositions(container, pieces) {
+  // Get the first piece dimensions to estimate puzzle size
+  const firstPiece = pieces[0];
+  let pieceWidth = firstPiece.offsetWidth;
+  let pieceHeight = firstPiece.offsetHeight;
+
+  // If dimensions are still 0, try naturalWidth/Height
+  if (pieceWidth === 0) {
+    pieceWidth = firstPiece.naturalWidth || 300;
+  }
+  if (pieceHeight === 0) {
+    pieceHeight = firstPiece.naturalHeight || 300;
+  }
+
+  // Set container dimensions based on first piece
+  container.style.width = pieceWidth + "px";
+  container.style.height = pieceHeight + "px";
+
+  // Define scattered positions - pieces move outward from center in their direction
+  const scatterOffsets = [
+    { x: -35, y: -38, rot: -8 }, // p1 - upper left, move further upper-left
+    { x: 38, y: -35, rot: 10 }, // p2 - upper right, move further upper-right
+    { x: -38, y: 35, rot: 12 }, // p3 - lower left, move further lower-left
+    { x: 36, y: 38, rot: -10 }, // p4 - lower right, move further lower-right
+    { x: 42, y: -3, rot: -6 }, // p5 - right side, move further right
+    { x: -40, y: 10, rot: 8 }, // p6 - left side, move further left
+    { x: 12, y: -42, rot: -9 }, // p7 - top, move further upward
+  ];
+
+  pieces.forEach((piece, index) => {
+    const offset = scatterOffsets[index] || { x: 0, y: 0, rot: 0 };
+    piece.style.setProperty("--start-x", offset.x + "px");
+    piece.style.setProperty("--start-y", offset.y + "px");
+    piece.style.setProperty("--start-rot", offset.rot + "deg");
+  });
+}
+
+// ========================================
+// TOOLS INTERACTION
+// ========================================
+
+/**
+ * Initialize tools grid with click/hover interactions
+ */
+function initToolsInteraction() {
+  const toolItems = document.querySelectorAll(".tool-item");
+
+  // Desktop hover handling
+  toolItems.forEach((item) => {
+    item.addEventListener("mouseenter", function () {
+      // Remove active class from all items
+      toolItems.forEach((i) => i.classList.remove("active"));
+      // Add to hovered item
+      this.classList.add("active");
+    });
+  });
+
+  // Mobile/Touch click handling
+  const toolsGrid = document.querySelector(".tools-grid");
+  if (toolsGrid) {
+    toolsGrid.addEventListener("click", function (e) {
+      const toolItem = e.target.closest(".tool-item");
+      if (!toolItem) return;
+
+      // Prevent hover state from interfering on mobile
+      toolItems.forEach((item) => {
+        if (item !== toolItem) {
+          item.classList.remove("active");
+        }
+      });
+
+      // Toggle active state for clicked item
+      toolItem.classList.toggle("active");
+    });
+  }
+
+  // Remove active state when mouse leaves the grid on desktop
+  if (toolsGrid) {
+    toolsGrid.addEventListener("mouseleave", function () {
+      toolItems.forEach((item) => item.classList.remove("active"));
+    });
+  }
+}
+
 // Initialize when DOM is ready
 window.addEventListener("load", function () {
   initPortfolioWithDynamicImages();
   initShowMore();
   initVideoPlayer();
   initLinkHandlers();
+  initPuzzleAnimation();
+  initToolsInteraction();
 });
