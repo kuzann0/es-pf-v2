@@ -398,7 +398,7 @@ function initTagSystem() {
   allTags.forEach((tag) => {
     const btn = document.createElement("button");
     btn.className = "tag-btn";
-    btn.textContent = tag;
+    btn.textContent = "#" + tag;
     btn.setAttribute("data-tag", tag);
 
     btn.addEventListener("click", () => {
