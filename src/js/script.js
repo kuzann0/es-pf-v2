@@ -3,6 +3,173 @@
 // ========================================
 
 /**
+ * Loading Overlay Functions
+ */
+
+// Cool loading phrases
+const loadingPhrases = [
+  "Hold tight, magic incoming",
+  "Sprinkling some digital dust",
+  "Getting the vibes right",
+  "Just flexing the pixels",
+  "Cooking up something fresh",
+  "Tuning the universe",
+  "Making it pop",
+  "Catching the perfect moment",
+  "Building something sick",
+  "Dialing in the details",
+  "Throwing it all together",
+  "Leveling up your experience",
+  "Bringing the heat",
+  "Fine-tuning the experience",
+  "Setting the mood",
+  "Loading the sauce",
+  "Locking in the essence",
+  "Balancing the chaos",
+  "Dropping the remix",
+  "Getting that fresh feel",
+  "Stacking the blocks",
+  "Syncing the rhythm",
+  "Painting the canvas",
+  "Just vibing it out",
+  "Perfecting the flow",
+];
+
+function showLoadingOverlay() {
+  const overlay = document.getElementById("loading-overlay");
+  if (overlay) {
+    overlay.classList.remove("hidden");
+    updateLoadingText();
+  }
+}
+
+function updateLoadingText() {
+  const loadingText = document.querySelector(".loading-text");
+  if (loadingText) {
+    const randomPhrase = loadingPhrases[Math.floor(Math.random() * loadingPhrases.length)];
+    loadingText.textContent = randomPhrase;
+  }
+}
+
+function hideLoadingOverlay() {
+  const overlay = document.getElementById("loading-overlay");
+  if (overlay) {
+    overlay.classList.add("hidden");
+  }
+}
+
+/**
+ * Wait for all images and content to be loaded and adjusted
+ */
+function waitForContentAdjustment() {
+  return new Promise((resolve) => {
+    const categoryWrapper = document.querySelector(".category-wrapper");
+    if (!categoryWrapper) {
+      resolve();
+      return;
+    }
+
+    let stabilityCheckCount = 0;
+    const stabilityRequired = 2; // Only need 2 stable checks
+    let lastDimensions = null;
+    let elementLoadTimeout;
+    let stabilityTimeout;
+    let mutationTimeout;
+    let resizeTimeout;
+    let lastMutationTime = Date.now();
+
+    // Stop all checks and resolve
+    const finishLoading = () => {
+      clearTimeout(elementLoadTimeout);
+      clearTimeout(stabilityTimeout);
+      clearTimeout(mutationTimeout);
+      clearTimeout(resizeTimeout);
+      
+      mutationObserver.disconnect();
+      resizeObserver.disconnect();
+      
+      resolve();
+    };
+
+    // Check if layout is stable
+    const checkStability = () => {
+      const rect = categoryWrapper.getBoundingClientRect();
+      const dimensions = `${rect.width}|${rect.height}`;
+
+      if (dimensions === lastDimensions) {
+        stabilityCheckCount++;
+        if (stabilityCheckCount >= stabilityRequired) {
+          finishLoading();
+          return;
+        }
+      } else {
+        stabilityCheckCount = 0;
+      }
+
+      lastDimensions = dimensions;
+      clearTimeout(stabilityTimeout);
+      stabilityTimeout = setTimeout(checkStability, 50);
+    };
+
+    // Detect DOM mutations (elements being added/removed)
+    const mutationObserver = new MutationObserver(() => {
+      lastMutationTime = Date.now();
+      clearTimeout(mutationTimeout);
+      
+      mutationTimeout = setTimeout(() => {
+        // No mutations for 200ms, start stability check
+        checkStability();
+      }, 200);
+    });
+
+    // Detect size changes
+    const resizeObserver = new ResizeObserver(() => {
+      lastMutationTime = Date.now();
+      stabilityCheckCount = 0; // Reset stability when size changes
+      clearTimeout(resizeTimeout);
+      
+      resizeTimeout = setTimeout(() => {
+        checkStability();
+      }, 100);
+    });
+
+    // Wait for initial elements to load
+    const checkInitialLoad = () => {
+      const images = categoryWrapper.querySelectorAll("img");
+      const videos = categoryWrapper.querySelectorAll("video");
+      const modelViewers = categoryWrapper.querySelectorAll("model-viewer");
+
+      if (images.length === 0 && videos.length === 0 && modelViewers.length === 0) {
+        clearTimeout(elementLoadTimeout);
+        elementLoadTimeout = setTimeout(checkInitialLoad, 50);
+        return;
+      }
+
+      // Elements exist, start observing mutations and resizes
+      mutationObserver.observe(categoryWrapper, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["width", "height", "style"],
+      });
+
+      resizeObserver.observe(categoryWrapper);
+
+      // Start checking stability
+      lastMutationTime = Date.now();
+      checkStability();
+    };
+
+    checkInitialLoad();
+
+    // Absolute timeout - don't wait longer than 3 seconds
+    setTimeout(() => {
+      finishLoading();
+    }, 3000);
+  });
+}
+
+/**
  * Update footer year to current year
  */
 function updateFooterYear() {
@@ -27,14 +194,9 @@ function createImageElement(item, category) {
     div.setAttribute("data-tags", JSON.stringify(item.tags));
   }
 
-  div.innerHTML = `
-    <img src="${item.src}" alt="${item.alt}" />
-    <button class="view-icon" aria-label="View larger">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="10" cy="10" r="6"></circle>
-        <path d="M14 14l6 6"></path>
-      </svg>
-    </button>
+  // Add link-icon for web and personal categories
+  const hasLinkIcon = category === "web" || category === "personal";
+  const linkIconHTML = hasLinkIcon ? `
     <a
       class="link-icon"
       aria-label="Visit project"
@@ -48,6 +210,17 @@ function createImageElement(item, category) {
         ></path>
       </svg>
     </a>
+  ` : "";
+
+  div.innerHTML = `
+    <img src="${item.src}" alt="${item.alt}" />
+    <button class="view-icon" aria-label="View larger">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="11"></circle>
+        <path d="M8 16l8-8M16 16v-8h-8"></path>
+      </svg>
+    </button>
+    ${linkIconHTML}
   `;
 
   // Load image to detect its dimensions and apply aspect ratio dynamically
@@ -81,8 +254,8 @@ function createVideoElement(item, category) {
       <img src="${item.src}" alt="${item.alt}" class="gif-player" />
       <button class="view-icon" aria-label="View larger">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="10" cy="10" r="6"></circle>
-          <path d="M14 14l6 6"></path>
+          <circle cx="12" cy="12" r="11"></circle>
+          <path d="M8 16l8-8M16 16v-8h-8"></path>
         </svg>
       </button>
     `;
@@ -127,8 +300,8 @@ function createVideoElement(item, category) {
       </div>
       <button class="view-icon" aria-label="View larger">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="10" cy="10" r="6"></circle>
-          <path d="M14 14l6 6"></path>
+          <circle cx="12" cy="12" r="11"></circle>
+          <path d="M8 16l8-8M16 16v-8h-8"></path>
         </svg>
       </button>
     `;
@@ -153,8 +326,8 @@ function create3DElement(item, category) {
     <model-viewer src="${item.src}" alt="${item.alt}" auto-rotate camera-controls></model-viewer>
     <button class="view-icon" aria-label="View larger">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="10" cy="10" r="6"></circle>
-        <path d="M14 14l6 6"></path>
+        <circle cx="12" cy="12" r="11"></circle>
+        <path d="M8 16l8-8M16 16v-8h-8"></path>
       </svg>
     </button>
   `;
@@ -169,7 +342,9 @@ function create3DElement(item, category) {
  */
 async function loadCategoryFromConfig(category, type) {
   try {
-    const response = await fetch(`config/${category}.json`);
+    showLoadingOverlay();
+    
+    const response = await fetch(`./config/${category}.json`);
     const data = await response.json();
     const categoryWrapper = document.querySelector(".category-wrapper");
 
@@ -211,8 +386,13 @@ async function loadCategoryFromConfig(category, type) {
     } else if (type === "video") {
       initVideoPlayer();
     }
+    
+    // Wait for all content to be adjusted before hiding overlay
+    await waitForContentAdjustment();
+    hideLoadingOverlay();
   } catch (error) {
     console.error(`Failed to load ${category} config:`, error);
+    hideLoadingOverlay();
   }
 }
 
@@ -1039,57 +1219,18 @@ function initPuzzleAnimation() {
     return;
   }
 
-  // Wait for images to load to get their dimensions
-  let loadedCount = 0;
-  const pieces = Array.from(puzzlePieces);
-
-  pieces.forEach((piece, index) => {
-    piece.onload = function () {
-      loadedCount++;
-      if (loadedCount === pieces.length) {
-        calculatePuzzlePositions(puzzleContainer, pieces);
-      }
-    };
-    // Trigger load event if image is already cached
-    if (piece.complete) {
-      piece.onload();
-    }
-  });
-}
-
-/**
- * Calculate initial positions for puzzle pieces (scattered)
- */
-function calculatePuzzlePositions(container, pieces) {
-  // Get the first piece dimensions to estimate puzzle size
-  const firstPiece = pieces[0];
-  let pieceWidth = firstPiece.offsetWidth;
-  let pieceHeight = firstPiece.offsetHeight;
-
-  // If dimensions are still 0, try naturalWidth/Height
-  if (pieceWidth === 0) {
-    pieceWidth = firstPiece.naturalWidth || 300;
-  }
-  if (pieceHeight === 0) {
-    pieceHeight = firstPiece.naturalHeight || 300;
-  }
-
-  // Set container dimensions based on first piece
-  container.style.width = pieceWidth + "px";
-  container.style.height = pieceHeight + "px";
-
-  // Define scattered positions - pieces move outward from center in their direction
+  // Set initial CSS variables for all pieces
   const scatterOffsets = [
-    { x: -35, y: -38, rot: -8 }, // p1 - upper left, move further upper-left
-    { x: 38, y: -35, rot: 10 }, // p2 - upper right, move further upper-right
-    { x: -38, y: 35, rot: 12 }, // p3 - lower left, move further lower-left
-    { x: 36, y: 38, rot: -10 }, // p4 - lower right, move further lower-right
-    { x: 42, y: -3, rot: -6 }, // p5 - right side, move further right
-    { x: -40, y: 10, rot: 8 }, // p6 - left side, move further left
-    { x: 12, y: -42, rot: -9 }, // p7 - top, move further upward
+    { x: -10, y: -12, rot: -4 },
+    { x: 12, y: -10, rot: 5 },
+    { x: -12, y: 10, rot: 6 },
+    { x: 10, y: 12, rot: -5 },
+    { x: 13, y: -1, rot: -3 },
+    { x: -12, y: 3, rot: 4 },
+    { x: 3, y: -13, rot: -4 },
   ];
 
-  pieces.forEach((piece, index) => {
+  puzzlePieces.forEach((piece, index) => {
     const offset = scatterOffsets[index] || { x: 0, y: 0, rot: 0 };
     piece.style.setProperty("--start-x", offset.x + "px");
     piece.style.setProperty("--start-y", offset.y + "px");
@@ -1145,11 +1286,18 @@ function initToolsInteraction() {
 }
 
 // Initialize when DOM is ready
-window.addEventListener("load", function () {
+document.addEventListener("DOMContentLoaded", function () {
   initPortfolioWithDynamicImages();
   initShowMore();
   initVideoPlayer();
   initLinkHandlers();
   initPuzzleAnimation();
   initToolsInteraction();
+  
+  // Hide loading overlay after page is fully loaded
+  window.addEventListener("load", function () {
+    hideLoadingOverlay();
+  });
 });
+
+

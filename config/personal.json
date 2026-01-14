@@ -11,6 +11,12 @@
       "alt": "image",
       "link": "https://valentine-kuz.netlify.app/",
       "tags": ["personal", "web", "design"]
+    },
+    {
+      "src": "public/images/message-web.png",
+      "alt": "image",
+      "link": "https://message-kuz.netlify.app/",
+      "tags": ["personal", "web", "design"]
     }
   ]
 }

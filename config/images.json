@@ -6,6 +6,16 @@
       "tags": ["design", "branding", "poster"]
     },
     {
+      "src": "public/images/posters/Valeria1.png",
+      "alt": "image",
+      "tags": ["poster"]
+    },
+    {
+      "src": "public/images/posters/orange.png",
+      "alt": "image",
+      "tags": ["poster"]
+    },
+    {
       "src": "public/images/aka1.png",
       "alt": "image",
       "tags": ["design", "theory"]
@@ -24,6 +34,16 @@
       "src": "public/images/aka3.png",
       "alt": "image",
       "tags": ["design", "theory", "logo"]
+    },
+    {
+      "src": "public/images/clothing-elegant-1.png",
+      "alt": "image",
+      "tags": ["poster", "apparel"]
+    },
+    {
+      "src": "public/images/clothing-elegant-2.png",
+      "alt": "image",
+      "tags": ["poster", "apparel"]
     },
     {
       "src": "public/images/aka4.png",
@@ -119,6 +139,16 @@
       "src": "public/images/triumph2.png",
       "alt": "image",
       "tags": ["triumPH", "branding"]
+    },
+    {
+      "src": "public/images/posters/blue.png",
+      "alt": "image",
+      "tags": ["poster"]
+    },
+    {
+      "src": "public/images/posters/shrimp.png",
+      "alt": "image",
+      "tags": ["poster"]
     }
   ]
 }
