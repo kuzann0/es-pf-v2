@@ -2743,8 +2743,9 @@ model-viewer {
   object-fit: contain;
   object-position: top left;
   transform-origin: center center;
-  animation: puzzleAssemble 8s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  animation: puzzleAssemble 6s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
   z-index: 10;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.4));
 }
 
 /* Stagger animations for each piece */
@@ -2753,57 +2754,53 @@ model-viewer {
 }
 
 .puzzle-piece[data-piece="2"] {
-  animation-delay: 0.1s;
+  animation-delay: 0.08s;
 }
 
 .puzzle-piece[data-piece="3"] {
-  animation-delay: 0.2s;
+  animation-delay: 0.16s;
 }
 
 .puzzle-piece[data-piece="4"] {
-  animation-delay: 0.3s;
+  animation-delay: 0.24s;
 }
 
 .puzzle-piece[data-piece="5"] {
-  animation-delay: 0.4s;
+  animation-delay: 0.32s;
 }
 
 .puzzle-piece[data-piece="6"] {
-  animation-delay: 0.5s;
+  animation-delay: 0.4s;
 }
 
 .puzzle-piece[data-piece="7"] {
-  animation-delay: 0.6s;
+  animation-delay: 0.48s;
 }
 
 /* Puzzle animation keyframes - seamless loop with rotation and center anchor */
 @keyframes puzzleAssemble {
   0% {
-    transform: translate(calc(-50% + var(--start-x)), calc(-50% + var(--start-y))) rotate(var(--start-rot));
-    opacity: 1;
+    transform: translate(calc(-50% + var(--start-x)), calc(-50% + var(--start-y))) rotate(var(--start-rot)) scale(0.85);
+    opacity: 0.7;
   }
-  15% {
-    transform: translate(-50%, -50%) rotate(-10deg);
-    opacity: 1;
+  20% {
+    transform: translate(-50%, -50%) rotate(-8deg) scale(0.95);
+    opacity: 0.9;
   }
-  30% {
-    transform: translate(-50%, -50%) rotate(15deg);
-    opacity: 1;
-  }
-  45% {
-    transform: translate(-50%, -50%) rotate(-5deg);
+  40% {
+    transform: translate(-50%, -50%) rotate(12deg) scale(1.05);
     opacity: 1;
   }
   60% {
-    transform: translate(-50%, -50%) rotate(2deg);
+    transform: translate(-50%, -50%) rotate(-3deg) scale(0.98);
     opacity: 1;
   }
-  75% {
-    transform: translate(-50%, -50%) rotate(0deg);
+  80% {
+    transform: translate(-50%, -50%) rotate(1deg) scale(1);
     opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
     opacity: 1;
   }
 }
